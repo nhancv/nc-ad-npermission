@@ -1,3 +1,6 @@
+Installation
+https://jitpack.io/#nhancv/nc-android-npermission/v1.2
+
 Declare permission in Manifest
 ```
     <uses-permission android:name="android.permission.INTERNET" />
