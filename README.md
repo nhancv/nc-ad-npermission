@@ -1,5 +1,5 @@
 Installation
-https://jitpack.io/#nhancv/nc-android-npermission/v1.2
+https://jitpack.io/#nhancv/nc-android-npermission/
 
 Declare permission in Manifest
 ```
