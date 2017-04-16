@@ -30,6 +30,11 @@ public class MainActivity extends AppCompatActivity implements NPermission.OnPer
 
         //@nhancv TODO: request camera permission
         nPermission = new NPermission(true);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         nPermission.requestPermission(MainActivity.this, Manifest.permission.CAMERA);
     }
 

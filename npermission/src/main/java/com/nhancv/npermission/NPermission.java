@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
  */
 
 public class NPermission {
+    private static final String TAG = NPermission.class.getSimpleName();
     /**
      * Request code for all permissions
      */
@@ -26,9 +27,10 @@ public class NPermission {
      */
     private Activity runningActivity;
     private boolean forceRequest;
-    private boolean firstRequest;
+    private boolean neverAskFlag;
 
     public NPermission() {
+        this(false);
     }
 
     public NPermission(boolean forceRequest) {
@@ -37,13 +39,12 @@ public class NPermission {
 
     /**
      * Go to application setting
-     *
-     * @param context
      */
     public void startInstalledAppDetailsActivity(final Activity context) {
         if (context == null) {
             return;
         }
+        neverAskFlag = true;
         final Intent i = new Intent();
         i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         i.addCategory(Intent.CATEGORY_DEFAULT);
@@ -62,24 +63,26 @@ public class NPermission {
         this.forceRequest = forceRequest;
     }
 
+    public boolean checkPermissionGranted(String permission) {
+        return ContextCompat.checkSelfPermission(runningActivity.getApplicationContext(),
+                                                 permission)
+               == PackageManager.PERMISSION_GRANTED;
+    }
+
     /**
      * method to request permission
      *
      * @param runningActivity current activity reference
-     * @param permission      permission to ask
+     * @param permission permission to ask
      */
     public void requestPermission(Activity runningActivity, String permission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             this.runningActivity = runningActivity;
             if (ContextCompat.checkSelfPermission(runningActivity.getApplicationContext(),
-                    permission)
-                    != PackageManager.PERMISSION_GRANTED) {
-                if (!firstRequest) firstRequest = true;
-                ActivityCompat.requestPermissions(runningActivity,
-                        new String[]{permission},
-                        N_PERMISSIONS_REQUEST);
+                                                  permission) != PackageManager.PERMISSION_GRANTED && !neverAskFlag) {
+                ActivityCompat.requestPermissions(runningActivity, new String[]{permission}, N_PERMISSIONS_REQUEST);
             } else {
-                callInterface(runningActivity, permission, true);
+                callInterface(runningActivity, permission, checkPermissionGranted(permission));
             }
         }
 
@@ -88,15 +91,19 @@ public class NPermission {
     /**
      * This method is called in onRequestPermissionsResult of the runningActivity
      *
-     * @param requestCode  The request code of runningActivity.
-     * @param permissions  The requested permissions of runningActivity.
+     * @param requestCode The request code of runningActivity.
+     * @param permissions The requested permissions of runningActivity.
      * @param grantResults The grant results for the corresponding permissions from runningActivity
      */
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull
+                                                   String[] permissions,
+                                           @NonNull
+                                                   int[] grantResults) {
         switch (requestCode) {
             case N_PERMISSIONS_REQUEST: {
                 if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (runningActivity != null) {
                         callInterface(runningActivity, permissions[0], true);
                     }
@@ -113,17 +120,19 @@ public class NPermission {
     /**
      * Method to call OnPermissionResult interface
      *
-     * @param activity   activity reference
+     * @param activity activity reference
      * @param permission current asked permission
-     * @param isGranted  true if permission granted false otherwise
+     * @param isGranted true if permission granted false otherwise
      * @throws InterfaceNotImplementedException throws when OnPermissionResult is not implemented
      */
-    private void callInterface(Activity activity, String permission, boolean isGranted) throws InterfaceNotImplementedException {
+    private void callInterface(Activity activity, String permission, boolean isGranted)
+            throws InterfaceNotImplementedException {
         Method method;
         try {
             method = activity.getClass().getMethod("onPermissionResult", String.class, boolean.class);
         } catch (NoSuchMethodException e) {
-            throw new InterfaceNotImplementedException("please implement NPermission.OnPermissionResult interface in your activity to get the permissions result");
+            throw new InterfaceNotImplementedException(
+                    "please implement NPermission.OnPermissionResult interface in your activity to get the permissions result");
         }
         if (method != null) {
             try {
@@ -150,7 +159,7 @@ public class NPermission {
          * Method will get called after permission request
          *
          * @param permission asked permission
-         * @param isGranted  true if permission granted false otherwise
+         * @param isGranted true if permission granted false otherwise
          */
         void onPermissionResult(String permission, boolean isGranted);
 
