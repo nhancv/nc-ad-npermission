@@ -100,20 +100,24 @@ public class NPermission {
                                                    String[] permissions,
                                            @NonNull
                                                    int[] grantResults) {
-        switch (requestCode) {
-            case N_PERMISSIONS_REQUEST: {
-                if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (runningActivity != null) {
-                        callInterface(runningActivity, permissions[0], true);
-                    }
-                } else {
-                    if (runningActivity != null) {
-                        callInterface(runningActivity, permissions[0], false);
-                    }
+        try {
+            switch (requestCode) {
+                case N_PERMISSIONS_REQUEST: {
+                    if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        if (runningActivity != null) {
+                            callInterface(runningActivity, permissions[0], true);
+                        }
+                    } else {
+                        if (runningActivity != null) {
+                            callInterface(runningActivity, permissions[0], false);
+                        }
 
+                    }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
