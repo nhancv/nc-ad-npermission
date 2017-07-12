@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/nhancv/nc-android-npermission.svg)](https://jitpack.io/#nhancv/nc-android-npermission)
+
 Installation
 https://jitpack.io/#nhancv/nc-android-npermission/
 
