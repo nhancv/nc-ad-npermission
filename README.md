@@ -1,7 +1,7 @@
-[![](https://jitpack.io/v/nhancv/nc-android-npermission.svg)](https://jitpack.io/#nhancv/nc-android-npermission)
+[![](https://jitpack.io/v/nhancv/nc-android-permission.svg)](https://jitpack.io/#nhancv/nc-android-permission)
 
 Installation
-https://jitpack.io/#nhancv/nc-android-npermission/
+https://jitpack.io/#nhancv/nc-android-permission/
 
 Declare permission in Manifest
 ```

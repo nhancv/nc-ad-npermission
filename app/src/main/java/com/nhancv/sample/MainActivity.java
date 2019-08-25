@@ -1,12 +1,19 @@
+/*
+ * Developed by Nhan Cao on 8/25/19 9:44 AM.
+ * Last modified 8/25/19 9:44 AM.
+ * Copyright (c) 2019. All rights reserved.
+ */
+
 package com.nhancv.sample;
 
 import android.Manifest;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.nhancv.npermission.NPermission;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class MainActivity extends AppCompatActivity implements NPermission.OnPermissionResult {
@@ -18,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements NPermission.OnPer
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //@nhancv TODO: request camera permission
+        // @nhancv 2019-08-25: request camera permission
         nPermission = new NPermission(true);
     }
 
@@ -58,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements NPermission.OnPer
             case Manifest.permission.READ_EXTERNAL_STORAGE:
                 if (isGranted) {
                     Log.e("READ_EXTERNAL_STORAGE", "granted");
-                    //@nhancv TODO:
                 } else {
                     Log.e("READ_EXTERNAL_STORAGE", "denied");
                     nPermission.requestPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);

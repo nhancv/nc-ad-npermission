@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NPermission</string>
+    <string name="enable_yourself">Select permission and enable yourself.</string>
 </resources>

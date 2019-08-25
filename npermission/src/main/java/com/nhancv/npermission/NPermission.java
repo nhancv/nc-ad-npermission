@@ -1,3 +1,9 @@
+/*
+ * Developed by Nhan Cao on 8/25/19 9:44 AM.
+ * Last modified 8/25/19 9:41 AM.
+ * Copyright (c) 2019. All rights reserved.
+ */
+
 package com.nhancv.npermission;
 
 import android.app.Activity;
@@ -6,11 +12,13 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.widget.Toast;
 
 import java.lang.reflect.Method;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 /**
  * Created by nhancao on 1/12/17.
@@ -40,11 +48,14 @@ public class NPermission {
     /**
      * Go to application setting
      */
-    public void startInstalledAppDetailsActivity(final Activity context) {
+    public void startInstalledAppDetailsActivity(final Activity context, final boolean showToast) {
         if (context == null) {
             return;
         }
         neverAskFlag = true;
+        if (showToast) {
+            Toast.makeText(context, context.getResources().getText(R.string.enable_yourself), Toast.LENGTH_SHORT).show();
+        }
         final Intent i = new Intent();
         i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         i.addCategory(Intent.CATEGORY_DEFAULT);
@@ -65,8 +76,8 @@ public class NPermission {
 
     public boolean checkPermissionGranted(String permission) {
         return ContextCompat.checkSelfPermission(runningActivity.getApplicationContext(),
-                                                 permission)
-               == PackageManager.PERMISSION_GRANTED;
+                permission)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     /**
@@ -79,7 +90,7 @@ public class NPermission {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             this.runningActivity = runningActivity;
             if (ContextCompat.checkSelfPermission(runningActivity.getApplicationContext(),
-                                                  permission) != PackageManager.PERMISSION_GRANTED && !neverAskFlag) {
+                    permission) != PackageManager.PERMISSION_GRANTED && !neverAskFlag) {
                 ActivityCompat.requestPermissions(runningActivity, new String[]{permission}, N_PERMISSIONS_REQUEST);
             } else {
                 callInterface(runningActivity, permission, checkPermissionGranted(permission));
@@ -101,19 +112,17 @@ public class NPermission {
                                            @NonNull
                                                    int[] grantResults) {
         try {
-            switch (requestCode) {
-                case N_PERMISSIONS_REQUEST: {
-                    if (grantResults.length > 0
+            if (requestCode == N_PERMISSIONS_REQUEST) {
+                if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        if (runningActivity != null) {
-                            callInterface(runningActivity, permissions[0], true);
-                        }
-                    } else {
-                        if (runningActivity != null) {
-                            callInterface(runningActivity, permissions[0], false);
-                        }
-
+                    if (runningActivity != null) {
+                        callInterface(runningActivity, permissions[0], true);
                     }
+                } else {
+                    if (runningActivity != null) {
+                        callInterface(runningActivity, permissions[0], false);
+                    }
+
                 }
             }
         } catch (Exception e) {
@@ -138,20 +147,18 @@ public class NPermission {
             throw new InterfaceNotImplementedException(
                     "please implement NPermission.OnPermissionResult interface in your activity to get the permissions result");
         }
-        if (method != null) {
-            try {
-                if (isForceRequest() && !isGranted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (activity.shouldShowRequestPermissionRationale(permission)) {
-                        requestPermission(activity, permission);
-                    } else {
-                        startInstalledAppDetailsActivity(activity);
-                    }
+        try {
+            if (isForceRequest() && !isGranted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (activity.shouldShowRequestPermissionRationale(permission)) {
+                    requestPermission(activity, permission);
                 } else {
-                    method.invoke(activity, permission, isGranted);
+                    startInstalledAppDetailsActivity(activity, true);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
+                method.invoke(activity, permission, isGranted);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
