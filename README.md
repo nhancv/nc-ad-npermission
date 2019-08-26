@@ -21,62 +21,43 @@ https://jitpack.io/#nhancv/nc-android-permission/
 
 #### Option 1: Request permission explicitly in Runtime purpose
 Ex
-```java
-public class MainActivity extends AppCompatActivity implements OnPermissionResult {
+```
+import android.os.Bundle
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import com.nhancv.npermission.ExplicitPermissionResult
+import com.nhancv.npermission.NExplicitPermission
 
-    private NDefaultPermission nDefaultPermission;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+class MainActivity : AppCompatActivity(), ExplicitPermissionResult {
 
-        // @nhancv 2019-08-25: request camera permission
-        nDefaultPermission = new NDefaultPermission(MainActivity.this);
+    private var nCameraPermission: NExplicitPermission? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // @nhancv 2019-08-25: Create permission controller
+        nCameraPermission = NExplicitPermission(this,
+                explicitPermissionResult = this)
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        nDefaultPermission.requestPermission(Manifest.permission.CAMERA, false);
+    override fun onResume() {
+        super.onResume()
+        nCameraPermission?.requestPermission(android.Manifest.permission.CAMERA, false)
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        nDefaultPermission.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        nCameraPermission!!.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    @Override
-    public void onPermissionResult(String permission, boolean isGranted) {
-        switch (permission) {
-            case Manifest.permission.CAMERA:
-                if (isGranted) {
-                    Log.e("CAMERA", "granted");
-                    nDefaultPermission.requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                } else {
-                    Log.e("CAMERA", "denied");
-                    nDefaultPermission.requestPermission(Manifest.permission.CAMERA);
-                }
-                break;
-            case Manifest.permission.WRITE_EXTERNAL_STORAGE:
-                if (isGranted) {
-                    Log.e("WRITE_EXTERNAL_STORAGE", "granted");
-                    nDefaultPermission.requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-                } else {
-                    Log.e("WRITE_EXTERNAL_STORAGE", "denied");
-                    nDefaultPermission.requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                }
-                break;
-            case Manifest.permission.READ_EXTERNAL_STORAGE:
-                if (isGranted) {
-                    Log.e("READ_EXTERNAL_STORAGE", "granted");
-                } else {
-                    Log.e("READ_EXTERNAL_STORAGE", "denied");
-                    nDefaultPermission.requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-                }
-                break;
-        }
+    override fun onExplicitPermissionResult(permission: String, isGranted: Boolean) {
+        Log.e(TAG, "onExplicitPermissionResult: $permission isGranted: $isGranted")
+    }
+
+    companion object {
+        private val TAG = MainActivity::class.java.simpleName
     }
 }
 ```
@@ -84,36 +65,43 @@ public class MainActivity extends AppCompatActivity implements OnPermissionResul
 
 ```
 
-public class MainActivity extends AppCompatActivity implements OnPermissionResult {
+import android.os.Bundle
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import com.nhancv.npermission.AllPermissionResult
+import com.nhancv.npermission.NAllPermission
 
-    private NDefaultPermission nDefaultPermission;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+class MainActivity : AppCompatActivity(), AllPermissionResult {
 
-        // @nhancv 2019-08-25: request camera permission
-        nDefaultPermission = new NDefaultPermission(MainActivity.this);
+    private var nAllPermission: NAllPermission? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // @nhancv 2019-08-25: Create permission controller
+        nAllPermission = NAllPermission(this,
+                allPermissionResult = this)
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        nDefaultPermission.forceAllPermissionGranted();
+    override fun onResume() {
+        super.onResume()
+        nAllPermission?.forceAllPermissionGranted()
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        nDefaultPermission.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        nAllPermission!!.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    @Override
-    public void onPermissionResult(@NotNull String permission, boolean isGranted) {
-//        2019-08-25 21:54:12.240 16257-16257/com.nhancv.demo E/CAMERA: granted
-//        2019-08-25 21:54:16.776 16257-16257/com.nhancv.demo E/WRITE_EXTERNAL_STORAGE: granted
-//        2019-08-25 21:54:16.777 16257-16257/com.nhancv.demo E/READ_EXTERNAL_STORAGE: granted
+    override fun onAllPermissionGranted() {
+        Log.e(TAG, "onAllPermissionGranted: isAllGranted")
+    }
+
+    companion object {
+        private val TAG = MainActivity::class.java.simpleName
     }
 }
+
 ```

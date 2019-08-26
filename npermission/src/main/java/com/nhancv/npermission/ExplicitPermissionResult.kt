@@ -9,13 +9,14 @@ package com.nhancv.npermission
 /**
  * Interface to notify permission result
  */
-interface OnPermissionResult {
+interface ExplicitPermissionResult {
     /**
      * Method will get called after permission request
+     * Do not re-call request permission to avoid infinite loop
      *
      * @param permission asked permission
      * @param isGranted true if permission granted false otherwise
      */
-    fun onPermissionResult(permission: String, isGranted: Boolean)
+    fun onExplicitPermissionResult(permission: String, isGranted: Boolean)
 
 }
