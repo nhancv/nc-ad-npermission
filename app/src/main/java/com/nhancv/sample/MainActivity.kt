@@ -15,7 +15,7 @@ import com.nhancv.npermission.NAllPermission
 
 class MainActivity : AppCompatActivity(), AllPermissionResult {
 
-    private var nAllPermission: NAllPermission? = null
+    private lateinit var nAllPermission: NAllPermission
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,12 +28,12 @@ class MainActivity : AppCompatActivity(), AllPermissionResult {
 
     override fun onResume() {
         super.onResume()
-        nAllPermission?.forceAllPermissionGranted()
+        nAllPermission.forceAllPermissionGranted()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        nAllPermission!!.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        nAllPermission.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onAllPermissionGranted() {

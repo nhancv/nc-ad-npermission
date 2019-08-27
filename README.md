@@ -105,3 +105,12 @@ class MainActivity : AppCompatActivity(), AllPermissionResult {
 }
 
 ```
+
+#### Note
+
+Some devices/emulators auto add Google issues tracker permission. To avoid it add snip code below to manifests
+```
+    <uses-permission
+        android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE"
+        tools:node="remove" />
+```
